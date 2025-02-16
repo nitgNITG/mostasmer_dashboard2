@@ -16,7 +16,7 @@ const ProviderContext = createContext<{
   loading: boolean;
   token: string;
 }>({ user: null, session: {}, loading: true, token: "" });
-axios.defaults.baseURL = process.env.NEXT_PUBLIC_BASE_URL11 as string;
+axios.defaults.baseURL = process.env.NEXT_PUBLIC_BASE_URL as string;
 axios.defaults.withCredentials = true;
 
 const ProvdierApp = ({

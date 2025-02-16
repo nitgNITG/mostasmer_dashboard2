@@ -4,7 +4,7 @@ const authorization = async () => {
     try {
         const token = await (await cookies()).get('token')?.value;
 
-        const res = await fetch(`${process.env.BASE_URL}/api/verify-me`, {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/verify-me`, {
             cache: 'no-store',
             headers: {
                 'Authorization': `Bearer ${token}`
