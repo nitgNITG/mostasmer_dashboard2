@@ -2,7 +2,7 @@
 import { useAppContext } from "@/context/appContext";
 import { deleteCookie } from "@/lib/cookies-client";
 import axios from "axios";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import toast, { LoaderIcon } from "react-hot-toast";
 
