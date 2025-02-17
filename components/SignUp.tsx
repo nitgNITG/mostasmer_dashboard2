@@ -64,6 +64,7 @@ const SignUp = () => {
               >
                 <input
                   type="text"
+                  autoComplete="off"
                   id="fullname"
                   {...register("fullname", {
                     required: "Please enter the fullname",
@@ -81,6 +82,7 @@ const SignUp = () => {
           <div className="w-full">
             <div className="flex w-full border rounded-md shadow-sm">
               <select
+                autoComplete="off"
                 value={callCode}
                 onChange={(e) => {
                   setCallCode(e.target.value);
@@ -102,6 +104,7 @@ const SignUp = () => {
                     <input
                       type="text"
                       id="phone"
+                      autoComplete="off"
                       {...register("phone", {
                         required: "Please enter the phone",
                         validate: (phone) => {
@@ -139,6 +142,7 @@ const SignUp = () => {
               >
                 <input
                   type="email"
+                  autoComplete="off"
                   id="email"
                   {...register("email")}
                   className="py-3 px-8 w-full peer border-none bg-transparent placeholder-transparent focus:placeholder-gray-500 focus:border-transparent focus:outline-none focus:ring-0"
@@ -163,6 +167,7 @@ const SignUp = () => {
                 <input
                   type="password"
                   id="password"
+                  autoComplete="off"
                   {...register("password", {
                     required: "Please enter the password",
                   })}

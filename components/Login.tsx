@@ -34,6 +34,7 @@ const SignUp = () => {
         ...fData,
         phone: `${callCode}${fData.phone}`,
       });
+
       setCookie("token", data.token, 360);
       window.location.reload();
     } catch (error: any) {
@@ -51,6 +52,7 @@ const SignUp = () => {
           <div className="w-full">
             <div className="flex w-full border rounded-md shadow-sm">
               <select
+                autoComplete="off"
                 value={callCode}
                 onChange={(e) => {
                   setCallCode(e.target.value);
@@ -72,6 +74,7 @@ const SignUp = () => {
                     <input
                       type="text"
                       id="phone"
+                      autoComplete="off"
                       {...register("phone", {
                         required: "Please enter the phone",
                         validate: (phone) => {
@@ -108,6 +111,7 @@ const SignUp = () => {
                 <input
                   type="password"
                   id="password"
+                  autoComplete="off"
                   {...register("password", {
                     required: "Please enter the password",
                   })}
