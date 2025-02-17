@@ -35,7 +35,6 @@ const Payment = ({ session }: { session: string }) => {
   };
   const logout = async () => {
     deleteCookie("token");
-    push("/");
     setTimeout(() => window.location.reload(), 500);
   };
 
