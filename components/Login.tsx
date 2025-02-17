@@ -90,9 +90,9 @@ const SignUp = () => {
                         callCode == "+20" ? "010123456789" : "056789123"
                       }
                     />
-                    <span className="pointer-events-none absolute start-8 peer-focus:start-0.5 top-0 -translate-y-1/2 bg-white px-3 py-0.5 text-sm text-gray-700 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-md peer-focus:top-0 peer-focus:text-xs">
+                    {/* <span className="pointer-events-none absolute start-8 peer-focus:start-0.5 top-0 -translate-y-1/2 bg-white px-3 py-0.5 text-sm text-gray-700 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-md peer-focus:top-0 peer-focus:text-xs">
                       Phone
-                    </span>
+                    </span> */}
                   </label>
                 </div>
               </div>
@@ -118,9 +118,9 @@ const SignUp = () => {
                   className="py-3 px-8 w-full peer border-none bg-transparent placeholder-transparent focus:placeholder-gray-500 focus:border-transparent focus:outline-none focus:ring-0"
                   placeholder={"*************"}
                 />
-                <span className="pointer-events-none absolute start-8 peer-focus:start-0.5 top-0 -translate-y-1/2 bg-white px-3 py-0.5 text-sm text-gray-700 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-md peer-focus:top-0 peer-focus:text-xs">
+                {/* <span className="pointer-events-none absolute start-8 peer-focus:start-0.5 top-0 -translate-y-1/2 bg-white px-3 py-0.5 text-sm text-gray-700 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-md peer-focus:top-0 peer-focus:text-xs">
                   Password
-                </span>
+                </span> */}
               </label>
             </div>
             <ErrorMsg message={errors?.password?.message as string} />
