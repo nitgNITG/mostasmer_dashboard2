@@ -45,8 +45,17 @@ interface WalletHistory {
   history: WalletHistoryEntry[];
 }
 
+interface UserType {
+  id: number;
+  userType: string;
+  color: string;
+  buyAmount: number;
+  ratio: number;
+}
+
 interface Type {
   wallet: Wallet;
+  userType: UserType;
 }
 
 interface Offer {
@@ -71,6 +80,7 @@ const Payment = ({ session }: { session: string }) => {
 
   const [type, setType] = useState<Type | null>(null);
   const [offers, setOffers] = useState<OffersResponse | null>(null);
+  const [srRatio, setSrRatio] = useState<number | null>(null);
 
   const { token, user } = useAppContext();
   const fetchWallet = async () => {
@@ -99,6 +109,7 @@ const Payment = ({ session }: { session: string }) => {
       setLoadingFetch(false);
     }
   };
+
   const handlePayment = async () => {
     try {
       setLoading(true);
@@ -136,15 +147,32 @@ const Payment = ({ session }: { session: string }) => {
     }
   };
 
+  const fetchAboutApp = async () => {
+    try {
+      const settings = await fetchData("/api/app-data?fields=sr_ratio", {
+        // headers: {
+        //   Authorization: `Bearer ${token}`,
+        // },
+      });
+      setSrRatio(settings.data.appData[0].sr_ratio);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   useEffect(() => {
     fetchWallet();
   }, [success]);
 
+  useEffect(() => {
+    fetchAboutApp();
+  }, []);
+
   return (
     <>
       <div className="flex flex-col gap-8 w-full px-8">
-        <div className="flex justify-between items-center">
-          {loadingFetch && <LoaderIcon className="!size-5 " />}
+        <div className="grid grid-cols-2 gap-5 items-center">
+          {loadingFetch && <LoaderIcon className="!size-5 m-auto" />}
           {!loadingFetch && (
             <>
               <div className="flex gap-2 items-center">
@@ -156,14 +184,24 @@ const Payment = ({ session }: { session: string }) => {
                   <Wallet className="size-6" />
                 </button>
               </div>
-              <div className="flex gap-3">
+              <div className="flex gap-5 justify-end">
+                <span className="text-sm">
+                  User Type: {type?.userType.userType}
+                </span>
                 <span className="text-sm">
                   Total Purchase: {type?.wallet.buyerAmount}
                 </span>
-                <span className="text-sm">
-                  Total Points: {type?.wallet.point}
-                </span>
               </div>
+              {srRatio && type?.wallet.point && (
+                <div className="flex gap-5">
+                  <span className="text-sm">
+                    Total Points: {type?.wallet.point}
+                  </span>
+                  <span className="text-sm">
+                    You have total SR: {type?.wallet.point / srRatio}
+                  </span>
+                </div>
+              )}
             </>
           )}
         </div>
@@ -188,7 +226,7 @@ const Payment = ({ session }: { session: string }) => {
         {success && offers && (
           <div className="bg-gray-100 p-4 rounded-lg shadow-md">
             <h3 className="text-lg font-bold mb-2">Available Offers</h3>
-            <ul className="space-y-2">
+            <ul className="grid grid-cols-3">
               {offers?.offers.map((offer) => (
                 <li
                   key={offer.type}
@@ -198,6 +236,11 @@ const Payment = ({ session }: { session: string }) => {
                   <span className="text-indigo-600 font-semibold">
                     {offer.ratio}%
                   </span>
+                  {srRatio && (
+                    <span className="text-indigo-600 font-semibold">
+                      {offer.ratio * srRatio}
+                    </span>
+                  )}
                 </li>
               ))}
             </ul>
