@@ -172,7 +172,7 @@ const Payment = ({ session }: { session: string }) => {
     <>
       <div className="flex flex-col gap-8 w-full px-8">
         <div className="grid grid-cols-2 gap-5 items-center">
-          {loadingFetch && <LoaderIcon className="!size-5 m-auto" />}
+          {loadingFetch && <LoaderIcon className="!size-5 m-auto col-span-full" />}
           {!loadingFetch && (
             <>
               <div className="flex gap-2 items-center">
