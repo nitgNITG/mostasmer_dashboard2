@@ -172,7 +172,9 @@ const Payment = ({ session }: { session: string }) => {
     <>
       <div className="flex flex-col gap-8 w-full px-8">
         <div className="grid grid-cols-2 gap-5 items-center">
-          {loadingFetch && <LoaderIcon className="!size-5 m-auto col-span-full" />}
+          {loadingFetch && (
+            <LoaderIcon className="!size-5 m-auto col-span-full" />
+          )}
           {!loadingFetch && (
             <>
               <div className="flex gap-2 items-center">
@@ -226,11 +228,11 @@ const Payment = ({ session }: { session: string }) => {
         {success && offers && (
           <div className="bg-gray-100 p-4 rounded-lg shadow-md">
             <h3 className="text-lg font-bold mb-2">Available Offers</h3>
-            <ul className="grid grid-cols-3">
+            <ul className="space-y-2">
               {offers?.offers.map((offer) => (
                 <li
                   key={offer.type}
-                  className="flex justify-between w-full p-2 bg-white rounded-md shadow-sm border"
+                  className="grid grid-cols-3 w-full p-2 bg-white rounded-md shadow-sm border"
                 >
                   <span className="font-medium">{offer.type}</span>
                   <span className="text-indigo-600 font-semibold">
