@@ -213,15 +213,15 @@ const Payment = ({ session }: { session: string }) => {
         {success && offers && (
           <div className="flex col-span-full flex-col gap-2 bg-[#F0F2F5] border rounded-lg p-3 shadow-[0px_4px_10px_-4px_#00000040]">
             <h3 className="text-xl font-bold">Available Offers</h3>
-            <ul className="space-y-2">
-              <li className="grid grid-cols-5 w-full p-2">
+            <ul className="space-y-2 pl-2">
+              <li className="grid grid-cols-5 w-full gap-2">
                 <span className="font-bold col-span-2">Type</span>
                 <span className="font-semibold">Total Points</span>
                 <span className="font-semibold">Point back</span>
                 <span className="font-semibold">Value SR</span>
               </li>
               {offers?.offers.map((offer) => (
-                <li key={offer.type} className="grid grid-cols-5 w-full p-2">
+                <li key={offer.type} className="grid grid-cols-5 w-full gap-2">
                   <span className="font-semibold col-span-2">{offer.type}</span>
                   <span>{offer.ratio}%</span>
                   {srRatio && <span>{offer.ratio * srRatio}</span>}
