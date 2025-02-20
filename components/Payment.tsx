@@ -225,7 +225,7 @@ const Payment = ({ session }: { session: string }) => {
                   <span className="font-semibold col-span-2">{offer.type}</span>
                   <span>{offer.ratio}%</span>
                   {srRatio && <span>{offer.ratio * srRatio}</span>}
-                  <span>{offer.ratio}%</span>
+                  <span>{offer.ratio}</span>
                 </li>
               ))}
             </ul>
@@ -246,7 +246,11 @@ const Payment = ({ session }: { session: string }) => {
             className=" bg-primary rounded-full w-44 h-10  text-white font-semibold hover:opacity-80 transition-opacity"
             onClick={logout}
           >
-            {loadingLogout ? <LoaderIcon className="!size-5 m-auto" /> : "logout"}
+            {loadingLogout ? (
+              <LoaderIcon className="!size-5 m-auto" />
+            ) : (
+              "logout"
+            )}
           </button>
         </div>
       </div>
