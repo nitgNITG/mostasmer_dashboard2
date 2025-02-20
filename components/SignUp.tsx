@@ -11,27 +11,94 @@ import toast, { LoaderIcon } from "react-hot-toast";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAppContext } from "@/context/appContext";
 import LinkSession from "./LinkSession";
+import { Eye, EyeOff } from "lucide-react";
+import TextField from "./TextField";
+
+export const ShowPassword: React.FC<{
+  showPassword: boolean;
+  setShowPassword: React.Dispatch<React.SetStateAction<boolean>>;
+}> = ({ showPassword, setShowPassword }) => (
+  <button type="button" onClick={() => setShowPassword((prev) => !prev)}>
+    {showPassword ? <Eye /> : <EyeOff />}
+  </button>
+);
+
+type FormData = {
+  fullname: string;
+  email?: string;
+  phone: string;
+  password: string;
+  rememberMe: boolean;
+  checkbox: boolean;
+};
 
 const SignUp = () => {
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors },
-  } = useForm({ mode: "onSubmit" });
-  const [callCode, setCallCode] = useState("+966");
+  } = useForm<FormData>({
+    mode: "onSubmit",
+    defaultValues: {
+      fullname: "",
+      email: "",
+      phone: "",
+      password: "",
+      rememberMe: false,
+      checkbox: false,
+    },
+  });
+  const [callCode, setCallCode] = useState("");
   const [loading, setLoading] = useState(false);
   const { push } = useRouter();
   const searchParams = useSearchParams();
   const { user, session } = useAppContext();
   const params = new URLSearchParams(searchParams);
+  const [showPassword, setShowPassword] = useState<boolean>(false);
+  const phone = watch("phone");
+
+  useEffect(() => {
+    if (
+      phone.startsWith("010") ||
+      phone.startsWith("011") ||
+      phone.startsWith("012") ||
+      phone.startsWith("015")
+    ) {
+      setCallCode("+2");
+    } else if (phone.startsWith("5")) {
+      setCallCode("+966");
+    }
+  }, [phone]);
+
+  const validatePhone = (
+    phone: string | boolean | undefined
+  ): true | string => {
+    if (typeof phone !== "string") {
+      return "Invalid phone number format";
+    }
+    if (!libphonenumber(`${callCode}${phone}`)?.isValid()) {
+      return "Please enter a valid phone number";
+    }
+
+    return true;
+  };
+
   const onSubmit = handleSubmit(async (fData) => {
     try {
       setLoading(true);
+      const signUpData = { ...fData };
+      delete signUpData.email;
+
+      if (fData.email) {
+        signUpData.email = fData.email;
+      }
+
       const { data } = await axios.post(
         `/api/auth/signup`,
         {
-          ...fData,
-          phone: `${callCode}${fData.phone}`,
+          ...signUpData,
+          phone: `${callCode}${signUpData.phone}`,
         },
         {
           headers: {
@@ -53,134 +120,73 @@ const SignUp = () => {
     <div className="pt-10">
       <form className="space-y-5" onSubmit={onSubmit}>
         <div className="flex flex-col lg:flex-row gap-5">
-          <div className="w-full">
-            <div className="flex gap-5 items-center w-full">
-              <div className="absolute px-2">
-                <ProfileIcon className="size-5" />
-              </div>
-              <label
-                htmlFor="fullname"
-                className="w-full relative block rounded-md border border-gray-200 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
-              >
-                <input
-                  type="text"
-                  autoComplete="off"
-                  id="fullname"
-                  {...register("fullname", {
-                    required: "Please enter the fullname",
-                  })}
-                  className="py-3 px-8 w-full peer border-none bg-transparent placeholder-transparent focus:placeholder-gray-500 focus:border-transparent focus:outline-none focus:ring-0"
-                  placeholder={"Mostasmer"}
-                />
-                <span className="pointer-events-none absolute start-8 peer-focus:start-0.5 top-0 -translate-y-1/2 bg-white px-3 py-0.5 text-sm text-gray-700 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-md peer-focus:top-0 peer-focus:text-xs">
-                  Full Name
-                </span>
-              </label>
-            </div>
-            <ErrorMsg message={errors?.fullname?.message as string} />
-          </div>
-          <div className="w-full">
-            <div className="flex w-full border rounded-md shadow-sm">
-              <select
-                autoComplete="off"
-                value={callCode}
-                onChange={(e) => {
-                  setCallCode(e.target.value);
-                }}
-                className=""
-              >
-                <option value="+20">+20</option>
-                <option value="+966">+966</option>
-              </select>
-              <div className="w-full">
-                <div className="flex gap-5 items-center w-full">
-                  <div className="absolute px-2">
-                    <PhoneIcon className="size-5" />
-                  </div>
-                  <label
-                    htmlFor="phone"
-                    className="w-full relative block  border-y border-r border-transparent border-gray-200 focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
-                  >
-                    <input
-                      type="text"
-                      id="phone"
-                      autoComplete="off"
-                      {...register("phone", {
-                        required: "Please enter the phone",
-                        validate: (phone) => {
-                          if (
-                            !libphonenumber(`${callCode}${phone}`)?.isValid()
-                          ) {
-                            return `invalid phone number`;
-                          }
-                        },
-                      })}
-                      className="py-3 px-8 w-full peer border-none bg-transparent placeholder-transparent focus:placeholder-gray-500 focus:border-transparent focus:outline-none focus:ring-0"
-                      placeholder={
-                        callCode == "+20" ? "010123456789" : "056789123"
-                      }
-                    />
-                    <span className="pointer-events-none absolute start-8 peer-focus:start-0.5 top-0 -translate-y-1/2 bg-white px-3 py-0.5 text-sm text-gray-700 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-md peer-focus:top-0 peer-focus:text-xs">
-                      Phone
-                    </span>
-                  </label>
-                </div>
-              </div>
-            </div>
-            <ErrorMsg message={errors?.phone?.message as string} />
-          </div>
+          <TextField
+            register={register}
+            name="fullname"
+            placeholder="Full Name"
+            label={<ProfileIcon className="size-5" />}
+            error={errors.fullname?.message as string}
+            rules={{
+              required: "Please enter your full name",
+            }}
+          />
+          <TextField
+            register={register}
+            name="phone"
+            placeholder="Email or Mobile number"
+            label={<PhoneIcon className="size-5" />}
+            error={errors.phone?.message as string}
+            type="tel"
+            rules={{
+              required: "Please enter Email or Mobile number",
+              validate: validatePhone,
+            }}
+          />
         </div>
         <div className="flex flex-col lg:flex-row gap-5">
-          <div className="w-full">
-            <div className="flex gap-5 items-center w-full">
-              <div className="absolute px-2">
-                <EmailIcon className="size-5" />
-              </div>
-              <label
-                htmlFor="email"
-                className="w-full relative block rounded-md border border-gray-200 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
-              >
-                <input
-                  type="email"
-                  autoComplete="off"
-                  id="email"
-                  {...register("email")}
-                  className="py-3 px-8 w-full peer border-none bg-transparent placeholder-transparent focus:placeholder-gray-500 focus:border-transparent focus:outline-none focus:ring-0"
-                  placeholder={"mostasmer@gmail.com"}
-                />
-                <span className="pointer-events-none absolute start-8 peer-focus:start-0.5 top-0 -translate-y-1/2 bg-white px-3 py-0.5 text-sm text-gray-700 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-md peer-focus:top-0 peer-focus:text-xs">
-                  Eamil
-                </span>
-              </label>
-            </div>
-            <ErrorMsg message={errors?.email?.message as string} />
-          </div>
-          <div className="w-full">
-            <div className="flex gap-5 items-center w-full">
-              <div className="absolute px-2">
-                <PasswordIcon className="size-5" />
-              </div>
-              <label
-                htmlFor="password"
-                className="w-full relative block rounded-md border border-gray-200 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
-              >
-                <input
-                  type="password"
-                  id="password"
-                  autoComplete="off"
-                  {...register("password", {
-                    required: "Please enter the password",
-                  })}
-                  className="py-3 px-8 w-full peer border-none bg-transparent placeholder-transparent focus:placeholder-gray-500 focus:border-transparent focus:outline-none focus:ring-0"
-                  placeholder={"*************"}
-                />
-                <span className="pointer-events-none absolute start-8 peer-focus:start-0.5 top-0 -translate-y-1/2 bg-white px-3 py-0.5 text-sm text-gray-700 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-md peer-focus:top-0 peer-focus:text-xs">
-                  Password
-                </span>
-              </label>
-            </div>
-            <ErrorMsg message={errors?.password?.message as string} />
-          </div>
+          <TextField
+            register={register}
+            name="email"
+            placeholder="Email"
+            type="email"
+            label={<PhoneIcon className="size-5" />}
+            error={errors.email?.message as string}
+            rules={{
+              required: false,
+            }}
+          />
+          <TextField
+            register={register}
+            name="password"
+            placeholder="Password"
+            type={showPassword ? "text" : "password"}
+            error={errors?.password?.message as string}
+            label={<PasswordIcon className="size-5" />}
+            rules={{
+              required: "Please enter the password",
+              minLength: {
+                value: 6,
+                message: "Password must be at least 6 characters",
+              },
+            }}
+            icon={
+              <ShowPassword
+                showPassword={showPassword}
+                setShowPassword={setShowPassword}
+              />
+            }
+          />
+        </div>
+        <div className="flex flex-col gap-3">
+          <label htmlFor="rememberMe" className="flex items-center gap-3">
+            <input
+              type="checkbox"
+              {...register("rememberMe")}
+              className="size-4 accent-[#223F48]"
+              id="rememberMe"
+            />
+            <span>Remember me</span>
+          </label>
         </div>
         <div className="mt-10 flex flex-col gap-3 items-center">
           <button
@@ -199,7 +205,7 @@ const SignUp = () => {
             <input
               type="checkbox"
               {...register("checkbox", { required: "Please check box" })}
-              className="size-4"
+              className="size-4 accent-[#223F48]"
             />
             <p className="font-medium">
               by signing up, you agree to{" "}

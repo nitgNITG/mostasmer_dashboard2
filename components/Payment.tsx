@@ -18,9 +18,9 @@ import {
   Coins,
   CreditCard,
   RefreshCw,
-  Wallet,
 } from "lucide-react";
 import { DateToText } from "@/lib/DateToText";
+import { WalletIcon } from "./Icons";
 
 interface WalletHistoryEntry {
   id: string;
@@ -170,84 +170,85 @@ const Payment = ({ session }: { session: string }) => {
 
   return (
     <>
-      <div className="flex flex-col gap-8 w-full px-8">
+      <div className="flex flex-col gap-8 w-full px-8 py-4 h-full overflow-x-auto">
         <div className="grid grid-cols-2 gap-5 items-center">
           {loadingFetch && (
-            <LoaderIcon className="!size-5 m-auto col-span-full" />
+            <LoaderIcon className="!size-5 m-auto col-span-full row-span-2" />
           )}
           {!loadingFetch && (
             <>
               <div className="flex gap-2 items-center">
-                <h3 className="text-2xl font-bold">{user.fullname}</h3>
                 <button
                   type="button"
+                  className="hover:opacity-80 transition-opacity"
                   onClick={() => setWalletHistoryDialog(true)}
                 >
-                  <Wallet className="size-6" />
+                  <WalletIcon className="size-6 text-primary" />
                 </button>
+                <h3 className="text-2xl font-bold">{user.fullname}</h3>
               </div>
-              <div className="flex gap-5 justify-end">
-                <span className="text-sm">
-                  User Type: {type?.userType.userType}
-                </span>
-                <span className="text-sm">
-                  Total Purchase: {type?.wallet.buyerAmount}
-                </span>
-              </div>
+              <h3 className="text-2xl font-bold text-right">
+                {type?.userType.userType}
+              </h3>
               {srRatio && type?.wallet.point && (
-                <div className="flex gap-5">
-                  <span className="text-sm">
-                    Total Points: {type?.wallet.point}
-                  </span>
-                  <span className="text-sm">
-                    You have total SR: {type?.wallet.point / srRatio}
-                  </span>
+                <div className="flex col-span-full flex-col gap-2 bg-[#F0F2F5] border rounded-lg p-3 shadow-[0px_4px_10px_-4px_#00000040]">
+                  <h3 className="text-xl font-bold">You have total</h3>
+                  <div className="flex justify-around gap-2">
+                    <span className="text-sm">
+                      Points: {type?.wallet.point}
+                    </span>
+                    <span className="text-sm">
+                      SR: {type?.wallet.point / srRatio}
+                    </span>
+                    <span className="text-sm">
+                      Purchase: {type?.wallet.buyerAmount}
+                    </span>
+                  </div>
                 </div>
               )}
             </>
           )}
         </div>
-        <div className="flex justify-center gap-3">
-          {!success && (
-            <button
-              onClick={handlePayment}
-              disabled={loading}
-              className="px-5 py-2 bg-indigo-500 rounded-md text-white font-semibold"
-            >
-              {loading ? <LoaderIcon className="!size-5 " /> : "Payment"}
-            </button>
-          )}
-          <button
-            disabled={loadingLogout}
-            className="px-5 py-2 bg-indigo-500 rounded-md text-white font-semibold"
-            onClick={logout}
-          >
-            {loadingLogout ? <LoaderIcon className="!size-5 " /> : "logout"}
-          </button>
-        </div>
+
         {success && offers && (
-          <div className="bg-gray-100 p-4 rounded-lg shadow-md">
-            <h3 className="text-lg font-bold mb-2">Available Offers</h3>
+          <div className="flex col-span-full flex-col gap-2 bg-[#F0F2F5] border rounded-lg p-3 shadow-[0px_4px_10px_-4px_#00000040]">
+            <h3 className="text-xl font-bold">Available Offers</h3>
             <ul className="space-y-2">
+              <li className="grid grid-cols-5 w-full p-2">
+                <span className="font-bold col-span-2">Type</span>
+                <span className="font-semibold">Total Points</span>
+                <span className="font-semibold">Point back</span>
+                <span className="font-semibold">Value SR</span>
+              </li>
               {offers?.offers.map((offer) => (
-                <li
-                  key={offer.type}
-                  className="grid grid-cols-3 w-full p-2 bg-white rounded-md shadow-sm border"
-                >
-                  <span className="font-medium">{offer.type}</span>
-                  <span className="text-indigo-600 font-semibold">
-                    {offer.ratio}%
-                  </span>
-                  {srRatio && (
-                    <span className="text-indigo-600 font-semibold">
-                      {offer.ratio * srRatio}
-                    </span>
-                  )}
+                <li key={offer.type} className="grid grid-cols-5 w-full p-2">
+                  <span className="font-semibold col-span-2">{offer.type}</span>
+                  <span>{offer.ratio}%</span>
+                  {srRatio && <span>{offer.ratio * srRatio}</span>}
+                  <span>{offer.ratio}%</span>
                 </li>
               ))}
             </ul>
           </div>
         )}
+        <div className="flex justify-end gap-3">
+          {!success && (
+            <button
+              onClick={handlePayment}
+              disabled={loading}
+              className="bg-transparent hover:bg-primary w-44 h-10  text-black border-primary border-2 font-semibold rounded-full transition-colors"
+            >
+              {loading ? <LoaderIcon className="!size-5 m-auto" /> : "Payment"}
+            </button>
+          )}
+          <button
+            disabled={loadingLogout}
+            className=" bg-primary rounded-full w-44 h-10  text-white font-semibold hover:opacity-80 transition-opacity"
+            onClick={logout}
+          >
+            {loadingLogout ? <LoaderIcon className="!size-5 m-auto" /> : "logout"}
+          </button>
+        </div>
       </div>
 
       <Dialog open={walletHistoryDialog} onOpenChange={setWalletHistoryDialog}>
