@@ -61,6 +61,7 @@ interface Type {
 interface Offer {
   type: string;
   ratio: number;
+  userPointBackRatio: number;
 }
 
 interface OffersResponse {
@@ -223,7 +224,7 @@ const Payment = ({ session }: { session: string }) => {
               {offers?.offers.map((offer) => (
                 <li key={offer.type} className="grid grid-cols-5 w-full gap-2">
                   <span className="font-semibold col-span-2">{offer.type}</span>
-                  <span>{offer.ratio}%</span>
+                  <span>{offer.userPointBackRatio}%</span>
                   {srRatio && <span>{offer.ratio * srRatio}</span>}
                   <span>{offer.ratio}</span>
                 </li>
